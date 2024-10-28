@@ -6,6 +6,10 @@ def isValidEquation(equation):
     parts = equation.upper().split()
     if len(parts) < 3 or parts[-2] != '=':
         return False
+    
+    operands, operators, result = splitEquation(equation)
+    if(any(not operand.isalpha() for operand in operands + [result])):
+        return False
     return True
 
 # Split equation menjadi tuple
@@ -75,7 +79,7 @@ def recursiveAssignment(depth, max_depth, currentTuple, uniqueLetters, equation)
 
 def solveBruteForce(equation):
      if not isValidEquation(equation):
-        print("Invalid equation format. Please follow the format : A + B + C = D\n")
+        print("Invalid equation format. Check your input format\n")
         return
      uniqueLetters = extractUniqueLetters(equation)
      if len(uniqueLetters) > 10:

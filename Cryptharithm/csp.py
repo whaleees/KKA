@@ -6,6 +6,10 @@ def isValidEquation(equation):
     parts = equation.upper().split()
     if len(parts) < 3 or parts[-2] != '=':
         return False
+    
+    operands, operators, result = splitEquation(equation)
+    if(any(not operand.isalpha() for operand in operands + [result])):
+        return False
     return True
 
 # Split equation into parts
@@ -118,7 +122,7 @@ def backtrack(assignment, variables, domains, equation):
 
 def solveCSP(equation):
     if not isValidEquation(equation):
-        print("Invalid equation format. Please follow the format : A + B + C = D\n")
+        print("Invalid input format. Check your input format\n")
         return
     variables = extractUniqueLetters(equation)
 

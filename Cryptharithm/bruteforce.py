@@ -11,10 +11,10 @@ def isValidEquation(equation):
 # Split equation menjadi tuple
 def splitEquation(equation):
     parts = equation.upper().split()
-    operands = parts[:-2:2]
-    operator = parts[1]
+    operands = parts[:-2:2]             # start = 0, stop = -2 (second to last element), step = 2.  
+    operators = parts[1:-2:2]
     result = parts[-1]
-    return operands, operator, result
+    return operands, operators, result
 
 # Mendapatkan huruf unik dari equation
 def extractUniqueLetters(equation):
@@ -26,26 +26,38 @@ def extractUniqueLetters(equation):
 def wordToNumber(word, assignment):
     return int(''.join(str(assignment[letter]) for letter in word))
 
+# Evaluasi berdasarkan operator
+def evaluateWithPrecedence(operand_numbers, operators):
+    i = 0
+    while i < len(operators):
+        if operators[i] in '*/':
+            if operators[i] == '*':
+                operand_numbers[i] *= operand_numbers[i + 1]
+            elif operators[i] == '/':
+                if operand_numbers[i + 1] == 0:
+                    return None
+                operand_numbers[i] /= operand_numbers[i + 1]
+            del operand_numbers[i + 1]
+            del operators[i]
+        else:
+            i += 1
+    result = operand_numbers[0]
+    for i, op in enumerate(operators):
+        if op == '+':
+            result += operand_numbers[i + 1]
+        elif op == '-':
+            result -= operand_numbers[i + 1]
+    return result
+
 # Function to validate if the current digit assignment is correct
 def validateValues(assignment, equation):
-    operands, operator, result = splitEquation(equation)
+    operands, operators, result = splitEquation(equation)
     if any(assignment[operand[0]] == 0 for operand in operands + [result]):
         return False
     if all(letter in assignment or not letter.isalpha() for letter in ''.join(operands) + result):
         operand_numbers = [wordToNumber(operand, assignment) for operand in operands]
         final_result = wordToNumber(result, assignment)
-        calculated_result = operand_numbers[0]
-        for num in operand_numbers[1:]:
-            if operator == '+':
-                calculated_result += num
-            elif operator == '-':
-                calculated_result -= num
-            elif operator == '*':
-                calculated_result *= num
-            elif operator == '/':
-                if num == 0:
-                    return False
-                calculated_result /= num
+        calculated_result = evaluateWithPrecedence(operand_numbers, operators)
         return calculated_result == final_result
     return False
 
@@ -72,11 +84,11 @@ def solveBruteForce(equation):
      print("\nSearching for solution...\n")
      assignment = recursiveAssignment(0, len(uniqueLetters), (), uniqueLetters, equation)
      if assignment:
-        operands, operator, result = splitEquation(equation)
+        operands, operators, result = splitEquation(equation)
         print(f"Solution found: {assignment}")
-        operand_values = f" {operator} ".join(str(wordToNumber(operand, assignment)) for operand in operands)
-        final_result = wordToNumber(result, assignment)
-        print(f"Final result: {operand_values} = {final_result}")
+        for i in range(len(operators)):
+            print(f"{wordToNumber(operands[i], assignment)} {operators[i]}", end=' ')
+        print(f"{wordToNumber(operands[-1], assignment)} = {wordToNumber(result, assignment)}")
      else:
         print("No valid solution found.")
 

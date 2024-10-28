@@ -12,7 +12,7 @@ def isValidEquation(equation):
 def splitEquation(equation):
     parts = equation.upper().split()
     operands = parts[:-2:2]             # start = 0, stop = -2 (second to last element), step = 2.  
-    operators = parts[1:-2:2]
+    operators = parts[1::2][:-1]
     result = parts[-1]
     return operands, operators, result
 
@@ -146,11 +146,9 @@ def solveCSP(equation):
     if assignment:
         print(f"Solution found with assignment: {assignment}")
         operands, operators, result = splitEquation(equation)
-        print(f"Final result: ", end='')
-        for i in range(len(operators)):
-            print(f"{wordToNumber(operands[i], assignment)} {operators[i]}", end=' ')
-        print(f"{wordToNumber(operands[-1], assignment)} = {wordToNumber(result, assignment)}")
-        print()
+        operand_values = f" {operators[0]} ".join(str(wordToNumber(operand, assignment)) for operand in operands)
+        final_result = wordToNumber(result, assignment)
+        print(f"Final result: {operand_values} = {final_result}\n")
 
     # Tidak ada solusi valid yang ditemukan
     else:
